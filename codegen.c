@@ -11,6 +11,43 @@ char invalid_value[] = "???";
 
 // REGISTERS
 
+void gen_inc_dec(int idx){
+  if(get_atr2(idx) == POST_INC){
+      if(get_type(idx) == INT){
+        code("\n\t\tADDS\t$1, ");
+      }
+      else{
+        code("\n\t\tADDU\t$1, ");
+      }
+
+      gen_sym_name(idx);
+      code(", ");
+      int reg = take_reg();
+      gen_sym_name(reg);
+      gen_mov(reg, idx);
+
+      set_atr2(idx, NO_ATR);
+      free_if_reg(idx);
+    }
+    else if(get_atr2(idx) == POST_DEC){
+      if(get_type(idx) == INT){
+        code("\n\t\tSUBS\t");
+      }
+      else{
+        code("\n\t\tSUBU\t");
+      }
+
+      gen_sym_name(idx);
+      code(", $1, ");
+      int reg = take_reg();
+      gen_sym_name(reg);
+      gen_mov(reg, idx);
+
+      set_atr2(idx, NO_ATR);
+      free_if_reg(idx);
+    }
+}
+
 int take_reg(void) {
   if(free_reg_num > LAST_WORKING_REG) {
     err("Compiler error! No free registers!");

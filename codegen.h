@@ -19,4 +19,7 @@ void gen_cmp(int operand1_index, int operand2_index);
 // generise MOV naredbu, parametri su indeksi operanada u TS-a 
 void gen_mov(int input_index, int output_index);
 
+// genereise kod za dodavanje ili oduzimanje za 1 od ID-a.
+void gen_inc_dec(int idx);
+
 #endif

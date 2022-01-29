@@ -6,10 +6,8 @@ test-ok1... (test-ok1-1.mc, test-ok1-2.mc ...).
 1. While
     - Odradjen je osnovni while iskaz.
     - argumenti u while-u mogu biti:
-        - promenlijva
-        - literal
+        - izraz (id, literal, increment, decrement, function_call)
         - relacioni izraz
-    - Nema jos mogucnost da se ubaci npr a++ ili a--
 
     primeri:
         while(1){       // zauvek
@@ -24,10 +22,26 @@ test-ok1... (test-ok1-1.mc, test-ok1-2.mc ...).
             ...
         }
 
+        while(x++){
+            ...
+        }
+
 2. Inkrementi i dekrementi (post i pre)
     - Odradjenje mogucnosti za inkrement: 
         - x++ i ++x
     - za dekrement:
         - x-- i --x
 
-    - Za sada rade samo za dodelu (assigment).
+    - Mogu se staviti u:
+        - dodeli (assigment)
+        - while
+
+    - Ne podrzavaju ih relaioni izrazi (rel_exp)
+    - Ne mogu se staviti kao samostani iskazi:
+        - x++ samo ne moze da stoji za sad.
+
+
+- Dodata funkcija gen_inc_dec(int idx);
+    - Ona generise god za dodavanje ili oduzimanje za jedan od ID-a koje je na indeksu idx u
+    tabeli simbola.
+    - Sluzi samo za post increment i post decrement.

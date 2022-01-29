@@ -20,6 +20,8 @@
   int fcall_idx = -1;
   int lab_num = -1;
   int while_num = 0;
+  int for_num = 0;
+  int while_index = -1;
   FILE *output;
 %}
 
@@ -48,7 +50,7 @@
 %token _INC;
 %token _DEC;
 
-%type <i> num_exp exp literal while_uslov
+%type <i> num_exp exp literal while_uslov inc_dec_exp for_promena
 %type <i> function_call argument rel_exp if_part
 
 %nonassoc ONLY_IF
@@ -142,6 +144,52 @@ statement
   | if_statement
   | return_statement
   | while_statement
+  | for_statement
+  ;
+
+for_statement
+  : _FOR _LPAREN _ID _ASSIGN literal 
+      {
+        int idx = lookup_symbol($3, VAR|PAR);
+        if(idx == NO_INDEX)
+          err("'%s' undeclared", $3);
+
+        gen_mov($5, idx);
+        
+        code("\n@for_%d:", ++for_num);
+
+        $<i>$ = for_num;
+
+      }
+   _SEMICOLON rel_exp 
+      {
+        code("\n\t\t%s\t@for_%d_exit", opp_jumps[$8], $<i>6);
+      }
+    _SEMICOLON for_promena _RPAREN _LBRACKET statement_list _RBRACKET
+      {
+        if($11 != -1){
+            gen_inc_dec($11);
+        }
+        
+        code("\n\t\tJMP\t@for_%d", $<i>6);
+        code("\n@for_%d_exit:", $<i>6);
+      }
+  ;
+
+for_promena
+  : _ID _ASSIGN num_exp
+      {
+        int idx = lookup_symbol($1, VAR|PAR);
+        if(idx == NO_INDEX)
+          err("'%s' undeclared", $1);
+
+        gen_mov($3, idx);
+        $$ = -1;
+      }
+  | inc_dec_exp
+      {
+        $$ = $1;
+      }
   ;
 
 
@@ -154,11 +202,46 @@ while_statement
         }
     _LPAREN while_uslov 
         {
-          if($4 == -1){
+          if($4 < 0){
             code("\n\t\tJEQ\t@while_%d_exit", $<i>2);
           }
           else{
             code("\n\t\t%s\t@while_%d_exit", opp_jumps[$4], $<i>2);
+          }
+
+          if($4 == -2){
+            if(get_type(while_index) == INT){
+              code("\n\t\tADDS\t");
+            }
+            else{
+              code("\n\t\tADDU\t");
+            }
+
+            gen_sym_name(while_index);
+            code(", $1, ");
+            int reg = take_reg();
+            gen_sym_name(reg);
+            gen_mov(reg, while_index);
+
+            set_atr2(while_index, NO_ATR);
+            free_if_reg(while_index);
+          }
+          else if($4 == -3){
+              if(get_type(while_index) == INT){
+                code("\n\t\tSUBS\t");
+              }
+              else{
+                code("\n\t\tSUBU\t");
+              }
+
+              gen_sym_name(while_index);
+              code(", $1, ");
+              int reg = take_reg();
+              gen_sym_name(reg);
+              gen_mov(reg, while_index);
+
+              set_atr2(while_index, NO_ATR);
+              free_if_reg(while_index);
           }
           
           code("\n@while_%d_continue:", $<i>2);
@@ -171,28 +254,9 @@ while_statement
   ;
 
 while_uslov
-  : literal
+  : exp
       {
-         int type = get_type($1);
-         if(type == INT){
-           code("\n\t\tCMPS\t");
-         }
-         else{
-           code("\n\t\tCMPU\t");
-         }
-         gen_sym_name($1);
-         code(", ");
-         code("$0");
-
-         $$ = -1;    // posto je to specijalan slucaj
-      }
-
-  | _ID 
-      {
-        int idx = lookup_symbol($1, VAR|PAR);
-        if(idx == NO_INDEX)
-          err("'%s' is not declared", $1);
-
+        int idx = $1;
         int type = get_type(idx);
         if(type == INT){
           code("\n\t\tCMPS\t");
@@ -203,14 +267,26 @@ while_uslov
         gen_sym_name(idx);
         code(", ");
         code("$0");
-
-        $$ = -1;    // posto je to specijalan slucaj
+        
+        int atr = get_atr2(idx);
+        if(atr == NO_ATR){
+          $$ = -1;                      // znaci obican uslov sa nulom
+        }
+        else if(atr == POST_INC){
+          $$ = -2;
+        }
+        else if(atr == POST_DEC){
+          $$ = -3;
+        }
+        while_index = idx;
+        
       }
   | rel_exp
       {
         $$ = $1;
       }
   ;
+  
   
 compound_statement
   : _LBRACKET statement_list _RBRACKET
@@ -227,40 +303,7 @@ assignment_statement
             err("incompatible types in assignment");
         gen_mov($3, idx);
 
-        if(get_atr2($3) == POST_INC){
-          if(get_type($3) == INT){
-            code("\n\t\tADDS\t$1, ");
-          }
-          else{
-            code("\n\t\tADDU\t$1, ");
-          }
-
-          gen_sym_name($3);
-          code(", ");
-          int reg = take_reg();
-          gen_sym_name(reg);
-          gen_mov(reg, $3);
-
-          set_atr2($3, NO_ATR);
-          free_if_reg($3);
-        }
-        else if(get_atr2($3) == POST_DEC){
-          if(get_type($3) == INT){
-            code("\n\t\tSUBS\t");
-          }
-          else{
-            code("\n\t\tSUBU\t");
-          }
-
-          gen_sym_name($3);
-          code(", $1, ");
-          int reg = take_reg();
-          gen_sym_name(reg);
-          gen_mov(reg, $3);
-
-          set_atr2($3, NO_ATR);
-          free_if_reg($3);
-        }
+        gen_inc_dec($3);
       }
   ;
 
@@ -305,8 +348,15 @@ exp
   
   | _LPAREN num_exp _RPAREN
       { $$ = $2; }
+  
+  | inc_dec_exp
+      {
+        $$ = $1;
+      }
+  ;
 
-  | _ID _INC
+inc_dec_exp
+  : _ID _INC
       {
         int idx = lookup_symbol($1, VAR|PAR);
         if(idx == NO_INDEX)
