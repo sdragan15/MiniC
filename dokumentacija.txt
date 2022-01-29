@@ -1,0 +1,24 @@
+            Dokumentacija za Projekat
+
+- Test primeri su realizovani tako da ako se radi while, sto je pod tackom 1, onda se proveravaju
+test-ok1... (test-ok1-1.mc, test-ok1-2.mc ...).
+
+1. While
+    - Odradjen je osnovni while iskaz.
+    - argumenti u while-u mogu biti:
+        - promenlijva
+        - literal
+        - relacioni izraz
+
+    primeri:
+        while(1){       // zauvek
+            ...
+        }
+
+        while(x){       // Sve dok je x != 0
+            ...
+        }
+
+        while(y < u){   // Sve dok je y manje od u
+            ...
+        }
