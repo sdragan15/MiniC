@@ -16,6 +16,7 @@
 "else"               { return _ELSE; }
 "return"             { return _RETURN; }
 "while"              { return _WHILE; }
+"for"                { return _FOR; }
 
 "("                  { return _LPAREN; }
 ")"                  { return _RPAREN; }
@@ -24,6 +25,8 @@
 ";"                  { return _SEMICOLON; }
 "="                  { return _ASSIGN; }
 
+"++"                 { return _INC; }
+"--"                 { return _DEC; }
 "+"                  { yylval.i = ADD; return _AROP; }
 "-"                  { yylval.i = SUB; return _AROP; }
 

@@ -7,7 +7,6 @@
 
 #define SYMBOL_TABLE_LENGTH   64
 #define NO_INDEX              -1
-#define NO_ATR                 0
 #define LAST_WORKING_REG      12
 #define FUN_REG               13
 #define CHAR_BUFFER_LENGTH   128
@@ -24,6 +23,9 @@ extern int yyerror(char *s);
 
 //tipovi podataka
 enum types { NO_TYPE, INT, UINT };
+
+// Da li je pre increment ili post increment npr.
+enum atr2 { NO_ATR, POST_INC, POST_DEC};
 
 //vrste simbola (moze ih biti maksimalno 32)
 enum kinds { NO_KIND = 0x1, REG = 0x2, LIT = 0x4, 

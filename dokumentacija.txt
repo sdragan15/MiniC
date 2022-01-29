@@ -9,6 +9,7 @@ test-ok1... (test-ok1-1.mc, test-ok1-2.mc ...).
         - promenlijva
         - literal
         - relacioni izraz
+    - Nema jos mogucnost da se ubaci npr a++ ili a--
 
     primeri:
         while(1){       // zauvek
@@ -22,3 +23,11 @@ test-ok1... (test-ok1-1.mc, test-ok1-2.mc ...).
         while(y < u){   // Sve dok je y manje od u
             ...
         }
+
+2. Inkrementi i dekrementi (post i pre)
+    - Odradjenje mogucnosti za inkrement: 
+        - x++ i ++x
+    - za dekrement:
+        - x-- i --x
+
+    - Za sada rade samo za dodelu (assigment).

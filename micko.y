@@ -44,6 +44,9 @@
 %token <i> _AROP
 %token <i> _RELOP
 %token _WHILE
+%token _FOR
+%token _INC;
+%token _DEC;
 
 %type <i> num_exp exp literal while_uslov
 %type <i> function_call argument rel_exp if_part
@@ -141,6 +144,7 @@ statement
   | while_statement
   ;
 
+
 while_statement
   : _WHILE
         {
@@ -222,16 +226,52 @@ assignment_statement
           if(get_type(idx) != get_type($3))
             err("incompatible types in assignment");
         gen_mov($3, idx);
+
+        if(get_atr2($3) == POST_INC){
+          if(get_type($3) == INT){
+            code("\n\t\tADDS\t$1, ");
+          }
+          else{
+            code("\n\t\tADDU\t$1, ");
+          }
+
+          gen_sym_name($3);
+          code(", ");
+          int reg = take_reg();
+          gen_sym_name(reg);
+          gen_mov(reg, $3);
+
+          set_atr2($3, NO_ATR);
+          free_if_reg($3);
+        }
+        else if(get_atr2($3) == POST_DEC){
+          if(get_type($3) == INT){
+            code("\n\t\tSUBS\t");
+          }
+          else{
+            code("\n\t\tSUBU\t");
+          }
+
+          gen_sym_name($3);
+          code(", $1, ");
+          int reg = take_reg();
+          gen_sym_name(reg);
+          gen_mov(reg, $3);
+
+          set_atr2($3, NO_ATR);
+          free_if_reg($3);
+        }
       }
   ;
 
 num_exp
-  : exp
+  : exp 
 
   | num_exp _AROP exp
       {
         if(get_type($1) != get_type($3))
           err("invalid operands: arithmetic operation");
+
         int t1 = get_type($1);    
         code("\n\t\t%s\t", ar_instructions[$2 + (t1 - 1) * AROP_NUMBER]);
         gen_sym_name($1);
@@ -243,6 +283,7 @@ num_exp
         $$ = take_reg();
         gen_sym_name($$);
         set_type($$, t1);
+
       }
   ;
 
@@ -264,7 +305,76 @@ exp
   
   | _LPAREN num_exp _RPAREN
       { $$ = $2; }
+
+  | _ID _INC
+      {
+        int idx = lookup_symbol($1, VAR|PAR);
+        if(idx == NO_INDEX)
+          err("'%s' undeclared", $1);
+
+        set_atr2(idx, POST_INC);
+        $$ = idx;
+      }
+    
+  | _ID _DEC
+      {
+        int idx = lookup_symbol($1, VAR|PAR);
+        if(idx == NO_INDEX)
+          err("'%s' undeclared", $1);
+
+        set_atr2(idx, POST_DEC);
+        $$ = idx;
+      }
+
+  | _INC _ID
+      {
+        int idx = lookup_symbol($2, VAR|PAR);
+        if(idx == NO_INDEX)
+          err("'%s' undeclared", $2);
+
+        if(get_type(idx) == INT){
+            code("\n\t\tADDS\t");
+          }
+          else{
+            code("\n\t\tADDU\t");
+          }
+
+          gen_sym_name(idx);
+          code(", $1, ");
+          int reg = take_reg();
+          gen_sym_name(reg);
+          gen_mov(reg, idx);
+
+          free_if_reg(idx);
+
+        $$ = idx;
+      }
+
+  | _DEC _ID
+      {
+        int idx = lookup_symbol($2, VAR|PAR);
+        if(idx == NO_INDEX)
+          err("'%s' undeclared", $2);
+
+        if(get_type(idx) == INT){
+            code("\n\t\tSUBS\t");
+          }
+          else{
+            code("\n\t\tSUBU\t");
+          }
+
+          gen_sym_name(idx);
+          code(", $1, ");
+          int reg = take_reg();
+          gen_sym_name(reg);
+          gen_mov(reg, idx);
+
+          free_if_reg(idx);
+
+        $$ = idx;
+      }
   ;
+
 
 literal
   : _INT_NUMBER
