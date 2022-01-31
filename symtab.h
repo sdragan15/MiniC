@@ -54,4 +54,5 @@ unsigned logarithm2(unsigned value);
 // Inicijalizacija tabele simbola.
 void init_symtab(void);
 
+
 #endif

@@ -57,3 +57,7 @@ test-ok1... (test-ok1-1.mc, test-ok1-2.mc ...).
     - exp moze da bude:
         - dodela (id = num_exp)
         - inkrement ili dekrement (post ili pre)
+
+4. Nizovi
+    - Inicijalizacija niza (generisanje 0 na svim elementima niza i zauzimanje steka za generisanje koda)
+    - 

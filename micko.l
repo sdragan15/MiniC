@@ -22,6 +22,8 @@
 ")"                  { return _RPAREN; }
 "{"                  { return _LBRACKET; }
 "}"                  { return _RBRACKET; }
+"["                  { return _LSQUARE; }
+"]"                  { return _RSQUARE; }
 ";"                  { return _SEMICOLON; }
 "="                  { return _ASSIGN; }
 

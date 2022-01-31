@@ -12,6 +12,7 @@ SYMBOL_ENTRY symbol_table[SYMBOL_TABLE_LENGTH];
 int first_empty = 0;
 
 
+
 // Vraca indeks prvog sledeceg praznog elementa.
 int get_next_empty_element(void) {
   if(first_empty < SYMBOL_TABLE_LENGTH)
@@ -193,4 +194,6 @@ void init_symtab(void) {
     insert_symbol(strdup(s), REG, NO_TYPE, NO_ATR, NO_ATR);
   }
 }
+
+
 

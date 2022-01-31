@@ -16,6 +16,8 @@
   int error_count = 0;
   int warning_count = 0;
   int var_num = 0;
+  int array_num = 0;
+  int array_elements = 0;
   int fun_idx = -1;
   int fcall_idx = -1;
   int lab_num = -1;
@@ -24,6 +26,10 @@
   int while_index[100];
   int for_index[100];
   int assign_index[100];
+
+  int array_table[20][20];
+  int first_empty_array = 0;
+
   FILE *output;
 %}
 
@@ -51,6 +57,8 @@
 %token _FOR
 %token _INC;
 %token _DEC;
+%token _LSQUARE;
+%token _RSQUARE;
 
 %type <i> num_exp exp literal while_uslov inc_dec_exp for_promena
 %type <i> function_call argument rel_exp if_part
@@ -114,7 +122,7 @@ body
   : _LBRACKET variable_list
       {
         if(var_num)
-          code("\n\t\tSUBS\t%%15,$%d,%%15", 4*var_num);
+          code("\n\t\tSUBS\t%%15,$%d,%%15", 4*var_num + array_elements*4);
         code("\n@%s_body:", get_name(fun_idx));
       }
     statement_list _RBRACKET
@@ -132,6 +140,25 @@ variable
            insert_symbol($2, VAR, $1, ++var_num, NO_ATR);
         else 
            err("redefinition of '%s'", $2);
+      }
+  | _TYPE _ID _LSQUARE literal _RSQUARE _SEMICOLON
+      {
+        int elements;
+        if(lookup_symbol($2, VAR|PAR|ARR) == NO_INDEX){
+            elements = atoi(get_name($4));
+            insert_symbol($2, ARR, $1, ++array_num, elements);
+            array_elements += elements;
+            int i;
+            for(i = 0; i<elements; i++){
+              array_table[first_empty_array][i] = 0;
+            }
+        } 
+        else 
+           err("redefinition of '%s'", $2);
+
+        if(elements <= 0){
+          err("array must have positive number of elements");
+        }
       }
   ;
 
