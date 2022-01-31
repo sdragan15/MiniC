@@ -124,7 +124,7 @@ body
   : _LBRACKET variable_list
       {
         if(var_num)
-          code("\n\t\tSUBS\t%%15,$%d,%%15", 4*var_num + array_elements*4);
+          code("\n\t\tSUBS\t%%15,$%d,%%15", 4*var_num);
         code("\n@%s_body:", get_name(fun_idx));
       }
     statement_list _RBRACKET
@@ -153,10 +153,8 @@ variable
             int i;
             for(i=0; i<elements-1; i++){
               sprintf(name, "arr_el");
-              insert_symbol(strdup(name), ARR_EL, $1, var_num + i + 1, NO_ATR);
+              insert_symbol(strdup(name), ARR_EL, $1, ++var_num, NO_ATR);
             }
-            
-            array_elements += elements - 1;
         } 
         else 
            err("redefinition of '%s'", $2);
@@ -313,11 +311,17 @@ assignment_statement
   | _ID _LSQUARE literal _RSQUARE _ASSIGN num_exp _SEMICOLON
       {
         int idx = lookup_symbol($1, VAR);
+        
         if(idx == NO_INDEX)
           err("invalid lvalue '%s' in assignment", $1);
         else
           if(get_type(idx) != get_type($6))
             err("incompatible types in assignment");
+
+        if(get_atr2(idx) <= atoi(get_name($3))){
+          err("Index is out of range");
+          return 0;
+        }
 
         int index = idx + atoi(get_name($3));
         gen_mov($6, index);
@@ -384,6 +388,7 @@ exp
         int broj = atoi(get_name($3));
         if(get_atr2(idx) <= broj){
           err("Index is out of range");
+          return 0;
         }
 
         int index = idx + broj;

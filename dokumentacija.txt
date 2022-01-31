@@ -6,7 +6,7 @@ test-ok1... (test-ok1-1.mc, test-ok1-2.mc ...).
 1. While
     - Odradjen je osnovni while iskaz.
     - argumenti u while-u mogu biti:
-        - izraz (id, literal, increment, decrement, function_call)
+        - izraz (exp)
         - relacioni izraz
 
     primeri:
@@ -35,10 +35,11 @@ test-ok1... (test-ok1-1.mc, test-ok1-2.mc ...).
     - Mogu se staviti u:
         - dodeli (assigment)
         - while
-
-    - Ne podrzavaju ih relaioni izrazi (rel_exp)
-    - Ne mogu se staviti kao samostani iskazi:
-        - x++ ili --x ...  same ne mogu da stoje za sad.
+        - for
+    - Mane:
+        - Ne podrzavaju ih relaioni izrazi (rel_exp)
+        - Ne mogu se staviti kao samostani iskazi:
+            - x++ ili --x ...  same ne mogu da stoje za sad.
 
 
 - Dodata funkcija gen_inc_dec(int idx);
@@ -57,7 +58,17 @@ test-ok1... (test-ok1-1.mc, test-ok1-2.mc ...).
     - exp moze da bude:
         - dodela (id = num_exp)
         - inkrement ili dekrement (post ili pre)
+    - exp ce se odma izvrsiti, pre prvog prolaska kroz petlju,
+    jedino ako se ne radi o post inkrementu/dekrementu.
 
 4. Nizovi
-    - Inicijalizacija niza (generisanje 0 na svim elementima niza i zauzimanje steka za generisanje koda)
-    - 
+    - impelemtirani kao izrazi u 'exp' labeli
+    - Inicijalizacija niza (zauzimanje steka za generisanje koda)
+    - Dodela vrednosti elementu niza
+    - Sabiranje/oduzimanje elemenata niza
+    - Moguce koristiti u svim funkcijama.
+    - Tokom inicijalizacije sve vredosti su postavljene na neku nasumicnu vrednost (nije na 0).
+
+    - Mane:
+        - Moze se nizu pristupiti samo preko literala, ne moze npr x[a]
+        - inc i dec ne radi (npr x[1]++).
