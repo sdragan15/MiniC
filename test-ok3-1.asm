@@ -5,7 +5,7 @@ main:
 		SUBS	%15,$12,%15
 @main_body:
 		MOV 	$0,-8(%14)
-		MOV 	$0,-4(%14)
+		MOV 	$1,-4(%14)
 @for_1:
 		CMPS 	-4(%14),$4
 		JGES	@for_1_exit

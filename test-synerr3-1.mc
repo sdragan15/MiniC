@@ -1,10 +1,10 @@
-//OPIS: for sa nedeklarisanom promenljivom
+//OPIS: neispravan for
 int main(){
   int x;
   int y;
   y=0;
 
-    for(k = 0; k < 10; k++){
+    for(k = 0; ; k++){
         y = y + 1;
     }
 

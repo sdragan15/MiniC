@@ -1,20 +1,19 @@
 //OPIS: ugnjezdeno while
-//RETURN: 12
+//RETURN: 30
 int main(){
   int x;
   int y;
   int z;
-  y = 0;
-  x = 0;
+  y = 5;
+  x = 6;
   z = 0;
 
-  while(y<10){
-    while(x<2){
-      x = x + 1;
+  while(y--){
+    while(x--){
+      z = z + 1;
     }
-    y = y + 1;
+    x = 6;
   }
-  z = y + x;
 
   return z;
 }

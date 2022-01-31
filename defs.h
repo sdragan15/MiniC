@@ -25,7 +25,7 @@ extern int yyerror(char *s);
 enum types { NO_TYPE, INT, UINT };
 
 // Da li je pre increment ili post increment npr.
-enum atr2 { NO_ATR, POST_INC, POST_DEC};
+enum atr2 { NO_ATR, POST_INC, POST_DEC, PRE};
 
 //vrste simbola (moze ih biti maksimalno 32)
 enum kinds { NO_KIND = 0x1, REG = 0x2, LIT = 0x4, 

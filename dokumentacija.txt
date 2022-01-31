@@ -38,10 +38,22 @@ test-ok1... (test-ok1-1.mc, test-ok1-2.mc ...).
 
     - Ne podrzavaju ih relaioni izrazi (rel_exp)
     - Ne mogu se staviti kao samostani iskazi:
-        - x++ samo ne moze da stoji za sad.
+        - x++ ili --x ...  same ne mogu da stoje za sad.
 
 
 - Dodata funkcija gen_inc_dec(int idx);
     - Ona generise god za dodavanje ili oduzimanje za jedan od ID-a koje je na indeksu idx u
     tabeli simbola.
     - Sluzi samo za post increment i post decrement.
+
+3. For petlja
+    - format:
+        for(id = literal; rel_exp; exp){
+            ...
+        }
+
+    - id je bilo koja deklarisana promenljiva.
+    - rel_exp je relacioni izraz.
+    - exp moze da bude:
+        - dodela (id = num_exp)
+        - inkrement ili dekrement (post ili pre)

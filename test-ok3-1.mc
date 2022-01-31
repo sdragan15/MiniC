@@ -6,7 +6,7 @@ int main(){
   int z;
   y = 0;
 
-  for(x = 0; x < 4; x++){
+  for(x = 1; x < 4; x++){
       y = y + x;
   }
 

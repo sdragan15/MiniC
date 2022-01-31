@@ -21,7 +21,9 @@
   int lab_num = -1;
   int while_num = 0;
   int for_num = 0;
-  int while_index = -1;
+  int while_index[100];
+  int for_index[100];
+  int assign_index[100];
   FILE *output;
 %}
 
@@ -168,7 +170,13 @@ for_statement
     _SEMICOLON for_promena _RPAREN _LBRACKET statement_list _RBRACKET
       {
         if($11 != -1){
-            gen_inc_dec($11);
+          if($11 == 1){
+            set_atr2(for_index[$<i>6], POST_INC);
+          }
+          else{
+            set_atr2(for_index[$<i>6], POST_DEC);
+          }
+            gen_inc_dec(for_index[$<i>6]);
         }
         
         code("\n\t\tJMP\t@for_%d", $<i>6);
@@ -188,7 +196,13 @@ for_promena
       }
   | inc_dec_exp
       {
-        $$ = $1;
+        if(get_atr2($1) == POST_INC){
+          $$ = 1;
+        }
+        else if(get_atr2($1) == POST_DEC){
+          $$ = 2;
+        }
+        for_index[for_num] = $1;
       }
   ;
 
@@ -209,40 +223,7 @@ while_statement
             code("\n\t\t%s\t@while_%d_exit", opp_jumps[$4], $<i>2);
           }
 
-          if($4 == -2){
-            if(get_type(while_index) == INT){
-              code("\n\t\tADDS\t");
-            }
-            else{
-              code("\n\t\tADDU\t");
-            }
-
-            gen_sym_name(while_index);
-            code(", $1, ");
-            int reg = take_reg();
-            gen_sym_name(reg);
-            gen_mov(reg, while_index);
-
-            set_atr2(while_index, NO_ATR);
-            free_if_reg(while_index);
-          }
-          else if($4 == -3){
-              if(get_type(while_index) == INT){
-                code("\n\t\tSUBS\t");
-              }
-              else{
-                code("\n\t\tSUBU\t");
-              }
-
-              gen_sym_name(while_index);
-              code(", $1, ");
-              int reg = take_reg();
-              gen_sym_name(reg);
-              gen_mov(reg, while_index);
-
-              set_atr2(while_index, NO_ATR);
-              free_if_reg(while_index);
-          }
+          gen_inc_dec(while_index[$<i>2]);
           
           code("\n@while_%d_continue:", $<i>2);
         }
@@ -268,18 +249,8 @@ while_uslov
         code(", ");
         code("$0");
         
-        int atr = get_atr2(idx);
-        if(atr == NO_ATR){
-          $$ = -1;                      // znaci obican uslov sa nulom
-        }
-        else if(atr == POST_INC){
-          $$ = -2;
-        }
-        else if(atr == POST_DEC){
-          $$ = -3;
-        }
-        while_index = idx;
-        
+        while_index[while_num] = idx;
+        $$ = -1;
       }
   | rel_exp
       {
@@ -303,6 +274,7 @@ assignment_statement
             err("incompatible types in assignment");
         gen_mov($3, idx);
 
+        
         gen_inc_dec($3);
       }
   ;
@@ -396,7 +368,7 @@ inc_dec_exp
           gen_mov(reg, idx);
 
           free_if_reg(idx);
-
+          set_atr2(idx, PRE);
         $$ = idx;
       }
 
@@ -420,7 +392,7 @@ inc_dec_exp
           gen_mov(reg, idx);
 
           free_if_reg(idx);
-
+        set_atr2(idx, PRE);
         $$ = idx;
       }
   ;

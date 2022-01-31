@@ -2,12 +2,13 @@
 main:
 		PUSH	%14
 		MOV 	%15,%14
-		SUBS	%15,$16,%15
+		SUBS	%15,$20,%15
 @main_body:
 		MOV 	$0,-8(%14)
 		MOV 	$2,-4(%14)
 		MOV 	$5,-12(%14)
 		MOV 	$2,-16(%14)
+		MOV 	$2,-20(%14)
 @while_1:
 		CMPS 	-8(%14),$5
 		JGES	@while_1_exit
@@ -22,7 +23,8 @@ main:
 		SUBS	-4(%14), $1, %0
 		MOV 	%0,-4(%14)
 @while_2_continue:
-		ADDS	-8(%14),$1,%0
+		MOV 	-8(%14),-8(%14)
+		ADDS	$1, -8(%14), %0
 		MOV 	%0,-8(%14)
 		JMP	@while_2
 @while_2_exit:
