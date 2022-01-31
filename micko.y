@@ -1,6 +1,7 @@
 %{
   #include <stdio.h>
   #include <stdlib.h>
+  #include <string.h>
   #include "defs.h"
   #include "symtab.h"
   #include "codegen.h"
@@ -23,6 +24,7 @@
   int lab_num = -1;
   int while_num = 0;
   int for_num = 0;
+  int arr_el_index = -1;
   int while_index[100];
   int for_index[100];
   int assign_index[100];
@@ -144,14 +146,17 @@ variable
   | _TYPE _ID _LSQUARE literal _RSQUARE _SEMICOLON
       {
         int elements;
-        if(lookup_symbol($2, VAR|PAR|ARR) == NO_INDEX){
+        if(lookup_symbol($2, VAR|PAR) == NO_INDEX){
             elements = atoi(get_name($4));
-            insert_symbol($2, ARR, $1, ++array_num, elements);
-            array_elements += elements;
+            insert_symbol($2, VAR, $1, ++var_num, elements);
+            char name[10];
             int i;
-            for(i = 0; i<elements; i++){
-              array_table[first_empty_array][i] = 0;
+            for(i=0; i<elements-1; i++){
+              sprintf(name, "arr_el");
+              insert_symbol(strdup(name), ARR_EL, $1, var_num + i + 1, NO_ATR);
             }
+            
+            array_elements += elements - 1;
         } 
         else 
            err("redefinition of '%s'", $2);
@@ -304,6 +309,22 @@ assignment_statement
         
         gen_inc_dec($3);
       }
+
+  | _ID _LSQUARE literal _RSQUARE _ASSIGN num_exp _SEMICOLON
+      {
+        int idx = lookup_symbol($1, VAR);
+        if(idx == NO_INDEX)
+          err("invalid lvalue '%s' in assignment", $1);
+        else
+          if(get_type(idx) != get_type($6))
+            err("incompatible types in assignment");
+
+        int index = idx + atoi(get_name($3));
+        gen_mov($6, index);
+
+        
+        gen_inc_dec($6);
+      }
   ;
 
 num_exp
@@ -351,6 +372,23 @@ exp
   | inc_dec_exp
       {
         $$ = $1;
+      }
+  
+  | _ID _LSQUARE literal _RSQUARE
+      {
+        int idx = lookup_symbol($1, VAR);
+        if(idx == NO_INDEX){
+          err("'%s' undeclared", $1);
+        }
+
+        int broj = atoi(get_name($3));
+        if(get_atr2(idx) <= broj){
+          err("Index is out of range");
+        }
+
+        int index = idx + broj;
+        $$ = index;       
+        
       }
   ;
 

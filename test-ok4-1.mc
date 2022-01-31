@@ -1,9 +1,13 @@
 //OPIS: ugnjezdeni for
-//RETURN: 0
+//RETURN: 5
 int main(){
   int x;
   int a[3];
 
-  return 0;
+  a[0] = 1;
+  a[1] = 4;
+  x = a[0] + a[1];
+
+  return x;
 }
 
