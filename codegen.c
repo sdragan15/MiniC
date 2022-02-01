@@ -71,10 +71,54 @@ void free_if_reg(int reg_index) {
     free_reg();
 }
 
+// generise move za niz koji je indeksiran preko promenljive
+// Prvo sta se salje, pa onda indeks niza, pa onda gde se stavlja
+void gen_move_arr(int what, int index, int where){
+  int reg = take_reg();
+  code("\n\t\tMULS\t$4, ");
+  gen_sym_name(index);
+  code(", ");
+  gen_sym_name(reg);
+
+  int array;
+  if(get_kind(where) == ARR)
+    array = where;
+  else
+    array = what;
+
+  code("\n\t\tADDS\t$%d, ", get_atr1(array)*4);
+  gen_sym_name(reg);
+  code(", ");
+  gen_sym_name(reg);
+  code("\n\t\tSUBS\t%%14, ");
+  gen_sym_name(reg);
+  code(", ");
+  gen_sym_name(reg);
+
+  if(get_kind(where) == ARR){
+      code("\n\t\tMOV\t");
+      gen_sym_name(what);
+      code(", (");
+      gen_sym_name(reg);
+      code(")"); 
+  }
+  else{
+      code("\n\t\tMOV\t(");
+      gen_sym_name(reg);
+      code("), ");
+      gen_sym_name(where);
+  }
+
+  free_if_reg(reg);
+
+   
+}
+
+
 // SYMBOL
 void gen_sym_name(int index) {
   if(index > -1) {
-    if(get_kind(index) == VAR || get_kind(index) == ARR_EL) // -n*4(%14)
+    if(get_kind(index) == VAR || get_kind(index) == ARR_EL || get_kind(index) == ARR) // -n*4(%14)
       code("-%d(%%14)", get_atr1(index) * 4);
     else 
       if(get_kind(index) == PAR) // m*4(%14)

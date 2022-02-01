@@ -69,6 +69,10 @@ test-ok1... (test-ok1-1.mc, test-ok1-2.mc ...).
     - Moguce koristiti u svim funkcijama.
     - Tokom inicijalizacije sve vredosti su postavljene na neku nasumicnu vrednost (nije na 0).
 
+    - Dodela vrednosti nizu preko indeksa kao Id radi:
+        - a[x] = 5;
+
     - Mane:
-        - Moze se nizu pristupiti samo preko literala, ne moze npr x[a]
+        - Nizu ne moze da se pristupi preo indeksa kao Id:
+            x = a[u]; ne radi.
         - inc i dec ne radi (npr x[1]++).

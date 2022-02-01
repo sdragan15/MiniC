@@ -63,7 +63,7 @@
 %token _RSQUARE;
 
 %type <i> num_exp exp literal while_uslov inc_dec_exp for_promena
-%type <i> function_call argument rel_exp if_part
+%type <i> function_call argument rel_exp if_part array_index
 
 %nonassoc ONLY_IF
 %nonassoc _ELSE
@@ -146,9 +146,9 @@ variable
   | _TYPE _ID _LSQUARE literal _RSQUARE _SEMICOLON
       {
         int elements;
-        if(lookup_symbol($2, VAR|PAR) == NO_INDEX){
+        if(lookup_symbol($2, VAR|PAR|ARR) == NO_INDEX){
             elements = atoi(get_name($4));
-            insert_symbol($2, VAR, $1, ++var_num, elements);
+            insert_symbol($2, ARR, $1, ++var_num, elements);
             char name[10];
             int i;
             for(i=0; i<elements-1; i++){
@@ -308,9 +308,9 @@ assignment_statement
         gen_inc_dec($3);
       }
 
-  | _ID _LSQUARE literal _RSQUARE _ASSIGN num_exp _SEMICOLON
+  | _ID _LSQUARE array_index _RSQUARE _ASSIGN num_exp _SEMICOLON
       {
-        int idx = lookup_symbol($1, VAR);
+        int idx = lookup_symbol($1, ARR);
         
         if(idx == NO_INDEX)
           err("invalid lvalue '%s' in assignment", $1);
@@ -323,11 +323,35 @@ assignment_statement
           return 0;
         }
 
-        int index = idx + atoi(get_name($3));
-        gen_mov($6, index);
+        if(get_kind($3) == VAR){
+            gen_move_arr($6, $3, idx);
+        }
+        else{
+            int index = idx + atoi(get_name($3));
+            gen_mov($6, index);
+        }
 
-        
         gen_inc_dec($6);
+      }
+    
+  | _ID _ASSIGN _ID _LSQUARE _ID _RSQUARE _SEMICOLON
+      {
+        
+      }
+  ;
+
+array_index
+  : literal
+      {
+        $$ = $1;
+      }
+  | _ID
+      {
+        int idx = lookup_symbol($1, VAR|PAR);
+        if(idx == NO_INDEX)
+          err("'%s' undeclared", $1);
+        
+        $$ = idx;
       }
   ;
 
@@ -380,7 +404,7 @@ exp
   
   | _ID _LSQUARE literal _RSQUARE
       {
-        int idx = lookup_symbol($1, VAR);
+        int idx = lookup_symbol($1, ARR);
         if(idx == NO_INDEX){
           err("'%s' undeclared", $1);
         }
@@ -396,6 +420,8 @@ exp
         
       }
   ;
+
+
 
 inc_dec_exp
   : _ID _INC
