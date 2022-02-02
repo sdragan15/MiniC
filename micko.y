@@ -61,6 +61,7 @@
 %token _DEC;
 %token _LSQUARE;
 %token _RSQUARE;
+%token _STRUCT;
 
 %type <i> num_exp exp literal while_uslov inc_dec_exp for_promena
 %type <i> function_call argument rel_exp if_part array_index
@@ -71,7 +72,7 @@
 %%
 
 program
-  : function_list
+  : structs_functions
       {  
         if(lookup_symbol("main", FUN) == NO_INDEX)
           err("undefined reference to 'main'");
@@ -81,6 +82,16 @@ program
 function_list
   : function
   | function_list function
+  ;
+
+struct_list
+  : struct
+  | struct_list struct
+  ;
+
+structs_functions
+  : function_list
+  | struct_list function_list
   ;
 
 function
@@ -107,6 +118,13 @@ function
         code("\n\t\tRET");
       }
   ;
+
+
+struct
+  : _STRUCT _ID _LBRACKET _RBRACKET _SEMICOLON
+  ;
+
+
 
 parameter
   : /* empty */
