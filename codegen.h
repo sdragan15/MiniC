@@ -22,6 +22,7 @@ void gen_mov(int input_index, int output_index);
 // genereise kod za dodavanje ili oduzimanje za 1 od ID-a.
 void gen_inc_dec(int idx);
 
-void gen_move_arr(int what, int index, int where);
+// vraca registar sa adresom od trazenog elementa iz niza
+int take_array_id(int array, int index);
 
 #endif

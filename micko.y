@@ -318,26 +318,21 @@ assignment_statement
           if(get_type(idx) != get_type($6))
             err("incompatible types in assignment");
 
-        if(get_atr2(idx) <= atoi(get_name($3))){
-          err("Index is out of range");
-          return 0;
-        }
-
         if(get_kind($3) == VAR){
-            gen_move_arr($6, $3, idx);
+          int reg = take_array_id(idx, $3);
+          gen_mov($6, reg);
+          free_if_reg(reg);
         }
         else{
+          if(get_atr2(idx) <= atoi(get_name($3))){
+            err("Index is out of range");
+            return 0;
+          }
             int index = idx + atoi(get_name($3));
             gen_mov($6, index);
         }
+      }
 
-        gen_inc_dec($6);
-      }
-    
-  | _ID _ASSIGN _ID _LSQUARE _ID _RSQUARE _SEMICOLON
-      {
-        
-      }
   ;
 
 array_index
@@ -418,6 +413,18 @@ exp
         int index = idx + broj;
         $$ = index;       
         
+      }
+
+  | _ID _LSQUARE _ID _RSQUARE
+      {
+        int array = lookup_symbol($1, ARR);
+        int index = lookup_symbol($3, VAR|PAR);
+        if(array == NO_INDEX || index == NO_INDEX)
+          err("undeclared variable");
+
+        int reg = take_array_id(array, index);
+
+        $$ = reg;
       }
   ;
 

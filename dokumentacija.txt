@@ -58,21 +58,24 @@ test-ok1... (test-ok1-1.mc, test-ok1-2.mc ...).
     - exp moze da bude:
         - dodela (id = num_exp)
         - inkrement ili dekrement (post ili pre)
-    - exp ce se odma izvrsiti, pre prvog prolaska kroz petlju,
-    jedino ako se ne radi o post inkrementu/dekrementu.
+
+    - Mane:
+        - exp ce se odma izvrsiti, pre prvog prolaska kroz petlju,
+        jedino ako se ne radi o post inkrementu/dekrementu.
 
 4. Nizovi
-    - impelemtirani kao izrazi u 'exp' labeli
+    - implementiran u exp, ponasa se kao exp.
     - Inicijalizacija niza (zauzimanje steka za generisanje koda)
-    - Dodela vrednosti elementu niza
-    - Sabiranje/oduzimanje elemenata niza
     - Moguce koristiti u svim funkcijama.
     - Tokom inicijalizacije sve vredosti su postavljene na neku nasumicnu vrednost (nije na 0).
 
-    - Dodela vrednosti nizu preko indeksa kao Id radi:
-        - a[x] = 5;
+    - indeks niza moze biti ili literal ili variabla.
+        - a[i] = 1;
+        - a[5] = 3;
+
+    - Dodata je funkcija u codegen.c : take_arr_id(int array, int index)
+        - Za zadati niz i zadati indeks u nizu vraca registar u kom
+        je adresa tog elementa iz niza.
 
     - Mane:
-        - Nizu ne moze da se pristupi preo indeksa kao Id:
-            x = a[u]; ne radi.
         - inc i dec ne radi (npr x[1]++).
