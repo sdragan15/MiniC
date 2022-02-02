@@ -8,4 +8,4 @@ Kompajler za jezik koji je podskup C jezika.
 - Hipsim je alat koji smo dobili na fakultetu (Fakultet tehnickih nauka).
 
 Napomena: MiniC je naziv jezika koji je implementiran od strane fakulteta i sadrzi najosnovnije implementacije iz jezika C. 
-          U ovom projektu sam implementirao ostale funkcionalnosti jezika (za vise detalja pogledati documentation.txt fajl).
+          U ovom projektu sam implementirao ostale funkcionalnosti jezika (za vise detalja pogledati documentacija.txt fajl).
