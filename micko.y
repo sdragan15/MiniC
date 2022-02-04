@@ -25,8 +25,9 @@
   int while_num = 0;
   int for_num = 0;
   int arr_el_index = -1;
+  int struct_num = 0;
+  char struct_name[20];
   int while_index[100];
-  int for_index[100];
   int assign_index[100];
 
   int array_table[20][20];
@@ -121,7 +122,27 @@ function
 
 
 struct
-  : _STRUCT _ID _LBRACKET _RBRACKET _SEMICOLON
+  : _STRUCT _ID
+      {
+          strcpy(struct_name, $2);
+      }
+    _LBRACKET struct_var_list _RBRACKET _SEMICOLON
+      {
+        int idx = lookup_symbol($2, VAR);
+        if(idx != NO_INDEX){
+          err("'%s' is already declared", $2);
+        }
+        
+      }
+  ;
+
+struct_var_list
+  :
+  | struct_var_list struct_var
+  ;
+
+struct_var
+  : _TYPE _ID _SEMICOLON
   ;
 
 
@@ -214,20 +235,19 @@ for_statement
    _SEMICOLON rel_exp 
       {
         code("\n\t\t%s\t@for_%d_exit", opp_jumps[$8], $<i>6);
+        code("\n\t\tJMP\tfor_%d_continue", $<i>6);
+        code("\n@for_%d_promena:", $<i>6);
       }
-    _SEMICOLON for_promena _RPAREN _LBRACKET statement_list _RBRACKET
-      {
-        if($11 != -1){
-          if($11 == 1){
-            set_atr2(for_index[$<i>6], POST_INC);
-          }
-          else{
-            set_atr2(for_index[$<i>6], POST_DEC);
-          }
-            gen_inc_dec(for_index[$<i>6]);
+    _SEMICOLON for_promena
+        {
+            gen_inc_dec($11);
+            code("\n\t\tJMP\t@for_%d", $<i>6);
+            code("\nfor_%d_continue:", $<i>6);
         }
+     _RPAREN _LBRACKET statement_list _RBRACKET
+      {
         
-        code("\n\t\tJMP\t@for_%d", $<i>6);
+        code("\n\t\tJMP\t@for_%d_promena", $<i>6);
         code("\n@for_%d_exit:", $<i>6);
       }
   ;
@@ -244,13 +264,7 @@ for_promena
       }
   | inc_dec_exp
       {
-        if(get_atr2($1) == POST_INC){
-          $$ = 1;
-        }
-        else if(get_atr2($1) == POST_DEC){
-          $$ = 2;
-        }
-        for_index[for_num] = $1;
+        $$ = $1;
       }
   ;
 

@@ -55,13 +55,11 @@ test-ok1... (test-ok1-1.mc, test-ok1-2.mc ...).
 
     - id je bilo koja deklarisana promenljiva.
     - rel_exp je relacioni izraz.
+    - exp se izvrsava na kraju svake iteracije.
     - exp moze da bude:
         - dodela (id = num_exp)
         - inkrement ili dekrement (post ili pre)
 
-    - Mane:
-        - exp ce se odma izvrsiti, pre prvog prolaska kroz petlju,
-        jedino ako se ne radi o post inkrementu/dekrementu.
 
 4. Nizovi
     - implementiran u exp, ponasa se kao exp.
@@ -79,3 +77,7 @@ test-ok1... (test-ok1-1.mc, test-ok1-2.mc ...).
 
     - Mane:
         - inc i dec ne radi (npr x[1]++).
+
+5. Strukture
+    - Strukture se definisu iskljucivo pre svih funkcija
+    - 

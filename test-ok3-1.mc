@@ -1,5 +1,5 @@
 //OPIS: for osnovni koncept
-//RETURN: 30
+//RETURN: 14
 int main(){
   int x;
   int y;
