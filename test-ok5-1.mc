@@ -12,8 +12,9 @@ struct Student{
 
 int main(){
   int x;
-  x = 1;
-  
+  struct s st;
+  int y;
+  struct Student student;
 
   return 1;
 }

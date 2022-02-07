@@ -22,7 +22,7 @@ extern int yyerror(char *s);
           if (++out_lin > 2000) err("Too many output lines"), exit(1); })
 
 //tipovi podataka
-enum types { NO_TYPE, INT, UINT };
+enum types { NO_TYPE, INT, UINT, STRUCT };
 
 // Da li je pre increment ili post increment npr.
 enum atr2 { NO_ATR, POST_INC, POST_DEC, PRE};

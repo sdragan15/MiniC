@@ -42,6 +42,9 @@
 
 [a-zA-Z][a-zA-Z0-9]* { yylval.s = strdup(yytext); 
                        return _ID; }
+
+[a-zA-Z][a-zA-Z0-9]*"."[a-zA-Z][a-zA-Z0-9]* { yylval.s = strdup(yytext); 
+                       return _STRUCT_ID; }
 [+-]?[0-9]{1,10}     { yylval.s = strdup(yytext); 
                        return _INT_NUMBER;}
 [0-9]{1,10}[uU]      { yylval.s = strdup(yytext); 

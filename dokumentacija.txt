@@ -80,4 +80,6 @@ test-ok1... (test-ok1-1.mc, test-ok1-2.mc ...).
 
 5. Strukture
     - Strukture se definisu iskljucivo pre svih funkcija
-    - 
+    - Inicijalizacija strukture:
+        - "struct" ID ID;
+        - primer: struct Student student;

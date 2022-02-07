@@ -29,6 +29,7 @@
   char struct_name[20];
   int while_index[100];
   int assign_index[100];
+ 
 
   int array_table[20][20];
   int first_empty_array = 0;
@@ -58,11 +59,12 @@
 %token <i> _RELOP
 %token _WHILE
 %token _FOR
-%token _INC;
-%token _DEC;
-%token _LSQUARE;
-%token _RSQUARE;
-%token _STRUCT;
+%token _INC
+%token _DEC
+%token _LSQUARE
+%token _RSQUARE
+%token _STRUCT
+%token <s> _STRUCT_ID
 
 %type <i> num_exp exp literal while_uslov inc_dec_exp for_promena
 %type <i> function_call argument rel_exp if_part array_index
@@ -129,10 +131,12 @@ struct
     _LBRACKET struct_var_list _RBRACKET _SEMICOLON
       {
         int idx = lookup_symbol($2, VAR);
-        if(idx != NO_INDEX){
+        if(idx == NO_INDEX){
+          insert_symbol($2, VAR, STRUCT, ++struct_num, NO_ATR);
+        }
+        else{
           err("'%s' is already declared", $2);
         }
-        
       }
   ;
 
@@ -196,6 +200,16 @@ variable
         if(elements <= 0){
           err("array must have positive number of elements");
         }
+      }
+  | _STRUCT _ID _ID _SEMICOLON
+      {
+        print_symtab();
+        int idx = lookup_symbol($2, VAR|PAR);
+        if(idx == NO_INDEX){
+          err("'%s' is undeclared", $2);
+        }
+
+        insert_symbol($3, VAR, STRUCT, ++var_num, NO_ATR);
       }
   ;
 
@@ -603,8 +617,7 @@ return_statement
         if(get_type(fun_idx) != get_type($2))
           err("incompatible types in return");
         gen_mov($2, FUN_REG);
-        code("\n\t\tJMP \t@%s_exit", get_name(fun_idx)); 
-        print_symtab();       
+        code("\n\t\tJMP \t@%s_exit", get_name(fun_idx));    
       }
   ;
 
