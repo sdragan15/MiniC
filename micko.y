@@ -188,12 +188,7 @@ variable
         if(lookup_symbol($2, VAR|PAR|ARR) == NO_INDEX){
             elements = atoi(get_name($4));
             insert_symbol($2, ARR, $1, ++var_num, elements);
-            char name[10];
-            int i;
-            for(i=0; i<elements-1; i++){
-              sprintf(name, "arr_el");
-              insert_symbol(strdup(name), ARR_EL, $1, ++var_num, NO_ATR);
-            }
+            var_num += elements - 1;
         } 
         else 
            err("redefinition of '%s'", $2);
@@ -350,19 +345,9 @@ assignment_statement
           if(get_type(idx) != get_type($6))
             err("incompatible types in assignment");
 
-        if(get_kind($3) == VAR){
-          int reg = take_array_id(idx, $3);
-          gen_mov($6, reg);
-          free_if_reg(reg);
-        }
-        else{
-          if(get_atr2(idx) <= atoi(get_name($3))){
-            err("Index is out of range");
-            return 0;
-          }
-            int index = idx + atoi(get_name($3));
-            gen_mov($6, index);
-        }
+        int reg = take_array_id(idx, $3);
+        gen_mov($6, reg);
+        free_if_reg(reg);
       }
 
   ;
@@ -370,7 +355,7 @@ assignment_statement
 array_index
   : literal
       {
-        $$ = $1;
+        $$ = atoi(get_name($1));
       }
   | _ID
       {
@@ -442,8 +427,8 @@ exp
           return 0;
         }
 
-        int index = idx + broj;
-        $$ = index;       
+        int reg = take_array_id(idx, broj);
+        $$ = reg;
         
       }
 
@@ -618,7 +603,8 @@ return_statement
         if(get_type(fun_idx) != get_type($2))
           err("incompatible types in return");
         gen_mov($2, FUN_REG);
-        code("\n\t\tJMP \t@%s_exit", get_name(fun_idx));        
+        code("\n\t\tJMP \t@%s_exit", get_name(fun_idx)); 
+        print_symtab();       
       }
   ;
 

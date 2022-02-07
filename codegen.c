@@ -78,6 +78,18 @@ void free_if_reg(int reg_index) {
 // vraca registar u kome se nalazi adresa od elementa iz niza
 // array na indeksu index.
 int take_array_id(int array, int index){
+  if(get_kind(index) != VAR && get_kind(index) != PAR){
+    int reg = take_reg();
+    int num = 4 * index + get_atr1(array) * 4;
+    code("\n\t\tSUBS\t%%14, $%d, ", num);
+    gen_sym_name(reg);
+
+    set_type(reg, get_type(array));
+    set_atr2(reg, -1);
+
+    return reg;
+  }
+  
   int reg = take_reg();
   code("\n\t\tMULS\t$4, ");
   gen_sym_name(index);
@@ -94,7 +106,6 @@ int take_array_id(int array, int index){
   gen_sym_name(reg);
 
   set_type(reg, get_type(array));
-  set_kind(reg, ARR);
   set_atr2(reg, -1);
 
   return reg;
@@ -105,12 +116,8 @@ int take_array_id(int array, int index){
 // SYMBOL
 void gen_sym_name(int index) {
   if(index > -1) {
-    if(get_kind(index) == VAR || get_kind(index) == ARR_EL || get_kind(index) == ARR) // -n*4(%14)
-      if(get_atr2(index) == -1){
-          code("(%s)", get_name(index));
-      }
-      else
-        code("-%d(%%14)", get_atr1(index) * 4);
+    if(get_kind(index) == VAR || get_kind(index) == ARR) // -n*4(%14)
+      code("-%d(%%14)", get_atr1(index) * 4);
     else 
       if(get_kind(index) == PAR) // m*4(%14)
         code("%d(%%14)", 4 + get_atr1(index) *4);
@@ -119,8 +126,11 @@ void gen_sym_name(int index) {
           code("$%s", get_name(index));
         else //function, reg
         {
+          if(get_atr2(index) == -1){
+            code("(%s)", get_name(index));
+          }
+          else
           code("%s", get_name(index));
-            
         }
           
   }
