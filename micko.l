@@ -18,6 +18,7 @@
 "while"              { return _WHILE; }
 "for"                { return _FOR; }
 "struct"             { return _STRUCT; }
+"abs"                { return _ABS; }
 
 "("                  { return _LPAREN; }
 ")"                  { return _RPAREN; }

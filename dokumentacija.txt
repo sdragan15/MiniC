@@ -83,3 +83,9 @@ test-ok1... (test-ok1-1.mc, test-ok1-2.mc ...).
     - Inicijalizacija strukture:
         - "struct" ID ID;
         - primer: struct Student student;
+
+6. Ugradjenje funkcije
+    - abs(id) = apsolutna vrednost
+        - Povratna vrednost je apsolutna vrednost od zadatog id-a
+        pr:
+            x = abs(y);

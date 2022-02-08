@@ -16,6 +16,8 @@ int main(){
   int y;
   struct Student student;
 
+  st.a = 1;
+
   return 1;
 }
 

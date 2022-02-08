@@ -29,6 +29,7 @@
   char struct_name[20];
   int while_index[100];
   int assign_index[100];
+  int abs_num = 0;
  
 
   int array_table[20][20];
@@ -65,6 +66,7 @@
 %token _RSQUARE
 %token _STRUCT
 %token <s> _STRUCT_ID
+%token _ABS
 
 %type <i> num_exp exp literal while_uslov inc_dec_exp for_promena
 %type <i> function_call argument rel_exp if_part array_index
@@ -203,7 +205,6 @@ variable
       }
   | _STRUCT _ID _ID _SEMICOLON
       {
-        print_symtab();
         int idx = lookup_symbol($2, VAR|PAR);
         if(idx == NO_INDEX){
           err("'%s' is undeclared", $2);
@@ -362,6 +363,13 @@ assignment_statement
         int reg = take_array_id(idx, $3);
         gen_mov($6, reg);
         free_if_reg(reg);
+
+        gen_inc_dec($6);
+      }
+
+  | _STRUCT_ID _ASSIGN num_exp _SEMICOLON
+      {
+        
       }
 
   ;
@@ -456,6 +464,41 @@ exp
         int reg = take_array_id(array, index);
 
         $$ = reg;
+      }
+
+  | _ABS _LPAREN exp _RPAREN
+      {
+        int idx = $3;
+
+        int type = get_type(idx);
+        code("\n\t\t");
+        if(type == INT){
+          code("CMPS\t");
+          gen_sym_name($3);
+          code(", $0");
+          int reg = take_reg();
+          gen_mov(idx, reg);
+          code("\n\t\tJGES\t@abs_%d_end", ++abs_num);
+          
+          code("\n\t\tMULS\t$-1, ");
+          gen_sym_name(reg);
+          code(", ");
+          gen_sym_name(reg);
+
+          set_type(reg, INT);
+          $$ = reg;
+
+        }
+        else if(type == UINT){
+          int reg = take_reg();
+          gen_mov(idx, reg);
+          set_type(reg, UINT);
+          $$ = reg;
+        }
+
+
+        code("\n@abs_%d_end:", abs_num);
+
       }
   ;
 
