@@ -1,7 +1,6 @@
             Dokumentacija za Projekat
 
-- Test primeri su realizovani tako da ako se radi while, sto je pod tackom 1, onda se proveravaju
-test-ok1... (test-ok1-1.mc, test-ok1-2.mc ...).
+- Test primeri su realizovani tako da ako se radi while, sto je pod tackom 1, onda se proveravaju test-ok1... (test-ok1-1.mc, test-ok1-2.mc ...).
 
 1. While
     - Odradjen je osnovni while iskaz.
@@ -32,14 +31,10 @@ test-ok1... (test-ok1-1.mc, test-ok1-2.mc ...).
     - za dekrement:
         - x-- i --x
 
-    - Mogu se staviti u:
-        - dodeli (assigment)
-        - while
-        - for
     - Mane:
         - Ne podrzavaju ih relaioni izrazi (rel_exp)
         - Ne mogu se staviti kao samostani iskazi:
-            - x++ ili --x ...  same ne mogu da stoje za sad.
+            - x++ ili --x ...  same ne mogu da stoje.
 
 
 - Dodata funkcija gen_inc_dec(int idx);
@@ -56,15 +51,11 @@ test-ok1... (test-ok1-1.mc, test-ok1-2.mc ...).
     - id je bilo koja deklarisana promenljiva.
     - rel_exp je relacioni izraz.
     - exp se izvrsava na kraju svake iteracije.
-    - exp moze da bude:
-        - dodela (id = num_exp)
-        - inkrement ili dekrement (post ili pre)
 
 
 4. Nizovi
     - implementiran u exp, ponasa se kao exp.
     - Inicijalizacija niza (zauzimanje steka za generisanje koda)
-    - Moguce koristiti u svim funkcijama.
     - Tokom inicijalizacije sve vredosti su postavljene na neku nasumicnu vrednost (nije na 0).
 
     - indeks niza moze biti ili literal ili variabla.
@@ -83,9 +74,12 @@ test-ok1... (test-ok1-1.mc, test-ok1-2.mc ...).
     - Inicijalizacija strukture:
         - "struct" ID ID;
         - primer: struct Student student;
+       
+    - Nista drugo nije uradjeno sem toga, nema generisanja koda...
 
 6. Ugradjenje funkcije
-    - abs(id) = apsolutna vrednost
+    - abs(exp) = apsolutna vrednost
         - Povratna vrednost je apsolutna vrednost od zadatog id-a
+        - Parametar je bilo koji izraz (exp)
         pr:
-            x = abs(y);
+            x = abs(a[i]);
